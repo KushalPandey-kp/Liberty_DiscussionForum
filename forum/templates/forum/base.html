@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Liberty Discussion Forum{% endblock %}</title>
+    <link rel="icon" href="{% static 'images/Liberty_favicon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=1">
+</head>
+<body>
+
+
+    <!-- Page content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; {{ now|default:"2025" }} Liberty Discussion Forum | All Rights Reserved</p>
+    </footer>
+
+</body>
+</html>

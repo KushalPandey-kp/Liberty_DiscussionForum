@@ -1,0 +1,50 @@
+
+{% extends 'forum/base.html' %}
+{% load static %}
+{% block title %}About Us - Liberty Discussion Forum{% endblock %}
+
+{% block content %}
+
+<nav class="flex justify-between items-center bg-white px-6 py-4 shadow">
+        <!-- Left: Logo -->
+   <a href="{% url 'home' %}" class="flex items-center space-x-2">
+    <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="nav-logo-img">
+   </a>
+
+        <!-- Center: Navigation Links -->
+        <div class="space-x-6">
+            <a href="{% url 'about_us' %}" class="text-gray-700 hover:text-red-600 font-medium">About Us</a>
+            <a href="{% url 'discussion_list' %}" class="text-gray-700 hover:text-red-600 font-medium">Discussions</a>
+            <a href="{% url 'user_review' %}" class="text-gray-700 hover:text-red-600 font-medium">User Reviews</a>
+            
+        </div>
+
+        <!-- Right: Auth Controls -->
+        <div class="space-x-4">
+            {% if user.is_authenticated %}
+                <span class="text-gray-700">Hello, <strong>{{ user.username }}</strong></span>
+                <form method="POST" action="{% url 'logout' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                        Logout
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="text-black-600 hover:underline">Login</a>
+                <a href="{% url 'signup' %}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Signup</a>
+            {% endif %}
+        </div>
+    </nav>
+
+<div class="about-wrapper">
+    <div class="about-logo">
+        <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo">
+    </div>
+    <div class="about-content">
+        <h1 class="about-heading">About Liberty Discussion Forum</h1>
+        <p class="about-paragraph">
+            Liberty Discussion Forum is an online platform developed by the students of Liberty College to promote academic and technical discussions among peers and faculty. It serves as a collaborative space where users can ask questions, share knowledge, and engage in meaningful conversations related to their studies, technology trends, programming, and more. The forum encourages interactive learning by allowing students to post queries, respond to others, and even share image-based questions through a user-friendly interface. With features like secure login, user roles, and dedicated sections for discussions and user reviews, the platform aims to build a strong academic community. Designed using Django for the backend and styled with Tailwind CSS and custom styles, the project follows the Agile development approach and provides students with practical experience in building a full-fledged web application.
+        </p>
+    </div>
+</div>
+{% endblock %}

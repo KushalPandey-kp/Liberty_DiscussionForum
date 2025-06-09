@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Liberty Discussion Forum</title>
+    {% load static %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="{% static 'images/Liberty_favicon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="flex justify-between items-center bg-white px-6 py-4 shadow">
+        <!-- Left: Logo -->
+        <a href="{% url 'home' %}" class="flex items-center space-x-2">
+            <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="h-10 w-auto object-contain">
+           
+        </a>
+
+        <!-- Center: Navigation Links -->
+        <div class="space-x-6">
+            <a href="{% url 'about_us' %}" class="text-gray-700 hover:text-red-600 font-medium">About Us</a>
+            <a href="{% url 'discussion_list' %}" class="text-gray-700 hover:text-red-600 font-medium">Discussions</a>
+            <a href="{% url 'user_review' %}" class="text-gray-700 hover:text-red-600 font-medium">User Reviews</a>
+            
+        </div>
+
+        <!-- Right: Auth Controls -->
+        <div class="space-x-4">
+            {% if user.is_authenticated %}
+                <span class="text-gray-700">Hello, <strong>{{ user.username }}</strong></span>
+                <form method="POST" action="{% url 'logout' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                        Logout
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="text-black-600 hover:underline">Login</a>
+                <a href="{% url 'signup' %}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Signup</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center justify-center text-center py-20">
+        <h2 class="text-4xl font-extrabold text-red-600 mb-6">Welcome to Liberty Discussion Forum!</h2>
+        <a href="{% url 'discussion_list' %}" class="text-lg text-red-600 hover:text-blue-800 underline mb-4">
+            Go to Discussions
+        </a>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white text-center py-4 shadow-inner text-sm text-gray-600">
+        &copy; {{ now|default:"2025" }} Liberty Discussion Forum | All Rights Reserved
+    </footer>
+
+</body>
+</html>

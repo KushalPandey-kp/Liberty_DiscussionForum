@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ discussion.title }} | Liberty Forum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="{% static 'images/Liberty_favicon.png' %}" type="image/png">
+</head>
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white-300 text-red-600 px-6 py-4 shadow-md flex justify-between items-center">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="h-10">
+        </a>
+        <span class="font-semibold">Liberty Discussion Forum</span>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-6 max-w-4xl mx-auto">
+        <!-- Discussion -->
+        <div class="bg-white p-6 rounded-lg shadow border border-gray-200 mb-8">
+            <h1 class="text-2xl font-bold text-red-600">{{ discussion.title }}</h1>
+            <p class="mt-4 text-gray-700">{{ discussion.content }}</p>
+            <p class="text-sm text-gray-500 mb-2">
+    Posted by 
+    <strong class="text-gray-800">{{ discussion.author.username }}</strong>
+    {% if discussion.author.userprofile %}
+        ({{ discussion.author.userprofile.role|title }})
+    {% endif %}
+    on {{ discussion.created_at }}
+</p>
+        </div>
+
+        <!-- Replies -->
+        <div class="mb-10">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Replies</h2>
+            {% for reply in discussion.replies.all %}
+                <div class="bg-gray-50 border border-gray-200 p-4 rounded mb-3">
+                    <p>{{ reply.content }}</p>
+                    <p class="text-sm text-gray-500 mb-2">
+    Posted by 
+    <strong class="text-gray-800">{{ reply.author.username }}</strong>
+    {% if reply.author.userprofile %}
+        ({{ reply.author.userprofile.role|title }})
+    {% endif %}
+    on {{ discussion.created_at }}
+</p>
+                </div>
+            {% empty %}
+                <p class="text-gray-500 italic">No replies yet. Be the first to reply!</p>
+            {% endfor %}
+        </div>
+
+        <!-- Reply Form -->
+        {% if user.is_authenticated %}
+        <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+            <h2 class="text-lg font-semibold text-red-600 mb-4">Post a Reply</h2>
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div>
+                    {{ form.content.label_tag }}
+                    {{ form.content }}
+                    {% for error in form.content.errors %}
+                        <p class="text-sm text-red-500">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded shadow">
+                    Submit Reply
+                </button>
+            </form>
+        </div>
+        {% else %}
+            <p class="text-gray-600 italic">You must <a href="{% url 'login' %}" class="text-red-600 hover:underline">log in</a> to reply.</p>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 text-center text-gray-500 text-sm py-4 border-t">
+        &copy; 2025 Liberty Discussion Forum
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Discussion | Liberty Discussion Forum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="{% static 'images/Liberty_favicon.png' %}" type="image/png">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<!-- Header -->
+<header class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-3">
+        <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="h-12 w-auto">
+        
+    </div>
+    <div>
+        {% if user.is_authenticated %}
+            <span class="text-gray-700 mr-4">Hello, <strong>{{ user.username }}</strong>!</span>
+            <form method="post" action="{% url 'logout' %}" class="inline">
+                {% csrf_token %}
+                <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}" class="text-blue-600 hover:underline mr-2">Login</a>
+            <a href="{% url 'signup' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Signup</a>
+        {% endif %}
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="flex-grow p-6 max-w-3xl mx-auto">
+    <div class="bg-white p-8 shadow-md rounded-lg border border-gray-200">
+        <h2 class="text-2xl font-bold text-red-600 mb-6">Start a New Discussion</h2>
+
+        <form method="post" class="space-y-6" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div>
+                <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+            <div>
+                <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
+                 {{ form.image }}
+            </div>
+            <div>
+                <label for="{{ form.content.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                {{ form.content }}
+                {% if form.content.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.content.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded shadow">
+                Post Discussion
+            </button>
+        </form>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-white text-center py-4 shadow-inner text-sm text-gray-600 mt-10">
+    &copy; {{ now|default:"2025" }} Liberty Discussion Forum | All Rights Reserved
+</footer>
+
+</body>
+</html>
