@@ -100,12 +100,12 @@ def new_post(request, thread_id):
 
 def discussion_list(request):
     sort_option = request.GET.get('sort', 'latest')
-    filter_date = request.GET.get('date')
+    date = request.GET.get('date')
 
     discussions = Discussion.objects.all()
 
-    if filter_date:
-        discussions = discussions.filter(created_at=filter_date)
+    if date:
+        discussions = discussions.filter(created_at__date=date)
 
     if sort_option == 'oldest':
         discussions = discussions.order_by('created_at')
