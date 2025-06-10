@@ -23,6 +23,14 @@
         <div class="bg-white p-6 rounded-lg shadow border border-gray-200 mb-8">
             <h1 class="text-2xl font-bold text-red-600">{{ discussion.title }}</h1>
             <p class="mt-4 text-gray-700">{{ discussion.content }}</p>
+
+            {% if discussion.image %}
+                <div class="mt-4">
+                    <img src="{{ discussion.image.url }}" alt="Discussion Image"
+                        class="max-w-full h-auto rounded shadow border">
+                </div>
+            {% endif %}
+
             <p class="text-sm text-gray-500 mb-2">
     Posted by 
     <strong class="text-gray-800">{{ discussion.author.username }}</strong>

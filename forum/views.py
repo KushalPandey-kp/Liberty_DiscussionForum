@@ -97,16 +97,17 @@ def discussion_list(request):
 
 @login_required
 def discussion_create(request):
-     if request.method == 'POST':
-          form = DiscussionForm(request.POST)
-          if form.is_valid():
-               discussion = form.save(commit = False)
-               discussion.author = request.user
-               discussion.save()
-               return redirect('discussion_list')
-     else:
+    if request.method == 'POST':
+        form = DiscussionForm(request.POST, request.FILES)  # Must include request.FILES
+        if form.is_valid():
+            discussion = form.save(commit=False)
+            discussion.author = request.user
+            discussion.save()
+            return redirect('discussion_detail', pk=discussion.pk)
+    else:
         form = DiscussionForm()
-     return render(request, 'forum/discussion_form.html',{'form':form})
+    
+    return render(request, 'discussion_form.html', {'form': form})
      
 
 def discussion_detail(request, pk):

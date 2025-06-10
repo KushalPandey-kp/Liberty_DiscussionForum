@@ -7,15 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="{% static 'images/Liberty_favicon.png' %}" type="image/png">
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
     <!-- Header -->
     <header class="bg-white shadow p-4 flex justify-between items-center">
         <div class="flex items-center space-x-2">
             <a href="{% url 'home' %}">
-                <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="h-12 w-auto object-contain hover:opacity-80">
+                <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="h-12 w-auto hover:opacity-80">
             </a>
-           
         </div>
         <div>
             {% if user.is_authenticated %}
@@ -34,35 +33,39 @@
     </header>
 
     <!-- Main content -->
-    <main class="flex-grow p-6 max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold text-red-600 mb-6">All Discussions</h2>
+    <main class="flex-grow p-6 max-w-7xl mx-auto">
+        <div class="flex items-center justify-between mb-6">
+           <h2 class="text-3xl font-bold text-red-600 mx-auto w-fit">All Discussions</h2>
 
-        {% if user.is_authenticated %}
-            <div class="mb-4">
+            {% if user.is_authenticated %}
                 <a href="{% url 'discussion_create' %}" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 shadow">
                     + Start New Discussion
                 </a>
-            </div>
-        {% endif %}
+            {% endif %}
+        </div>
 
         {% if discussions %}
-            <ul class="space-y-4">
+            <!-- Responsive Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for discussion in discussions %}
-                    <li class="bg-white border border-gray-200 rounded-lg shadow p-4 hover:bg-gray-50 transition">
-                        <a href="{% url 'discussion_detail' discussion.pk %}" class="text-xl font-semibold text-red-700 hover:underline">
-                            {{ discussion.title }}
-                        </a>
-                        <p class="text-sm text-gray-500 mb-2">
-    Posted by 
-    <strong class="text-gray-800">{{ discussion.author.username }}</strong>
-    {% if discussion.author.userprofile %}
-        ({{ discussion.author.userprofile.role|title }})
-    {% endif %}
-    on {{ discussion.created_at }}
-</p>
-                    </li>
+                    <div class="bg-white rounded-xl border border-gray-200 shadow hover:shadow-md transition duration-200 p-5 flex flex-col justify-between">
+                        <div>
+                            <a href="{% url 'discussion_detail' discussion.pk %}" class="text-xl font-semibold text-red-700 hover:underline block">
+                                {{ discussion.title }}
+                            </a>
+                            <p class="text-sm text-gray-500 mt-2">
+                                Posted by 
+                                <strong class="text-gray-800">{{ discussion.author.username }}</strong>
+                                {% if discussion.author.userprofile %}
+                                    ({{ discussion.author.userprofile.role|title }})
+                                {% endif %}
+                                <br>
+                                <span class="text-xs">on {{ discussion.created_at|date:"M d, Y H:i" }}</span>
+                            </p>
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% else %}
             <p class="text-gray-600">No discussions yet. Be the first to <a href="{% url 'discussion_create' %}" class="text-red-600 hover:underline">start one</a>!</p>
         {% endif %}
@@ -70,7 +73,7 @@
 
     <!-- Footer -->
     <footer class="bg-white text-center py-4 shadow-inner text-sm text-gray-600">
-        &copy; {{ now|default:"2025" }} Liberty Discussion Forum  | All Rights Reserved
+        &copy; {{ now|default:"2025" }} Liberty Discussion Forum | All Rights Reserved
     </footer>
 
 </body>
