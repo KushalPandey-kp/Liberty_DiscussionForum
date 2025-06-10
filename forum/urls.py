@@ -22,7 +22,7 @@ urlpatterns = [
 
     path('logout/', views.logout_view, name='logout'),
 
-    path('review/', views.user_review, name='user_review'),
-
+    path('review/', views.user_reviews, name='user_reviews'),
+   
     path('about/', views.about_us, name='about_us'),
 ]

@@ -1,9 +1,0 @@
-<h2 class="text-2xl font-bold mb-4 text-center">Image Gallery</h2>
-<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-  {% for post in images %}
-    <div class="border p-2 rounded shadow">
-      <img src="{{ images/Liberty_logo.png }}" class="w-full h-auto rounded">
-      <p class="mt-2 text-sm text-gray-600">{{ post.title }}</p>
-    </div>
-  {% endfor %}
-</div>

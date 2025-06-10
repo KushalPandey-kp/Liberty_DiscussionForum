@@ -12,26 +12,34 @@ from .models import Discussion
 from .forms import DiscussionForm, ReplyForm
 from django.contrib.auth.forms import UserCreationForm
 from .models import ImagePost
+from .models import UserReview
 
 def signup_view(request):
     if request.method == 'POST':
-        form = SignupForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            user = form.save()
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password1']
-            role = form.cleaned_data['role']
+        username = request.POST['username']
+        email = request.POST['email']
+        role = request.POST['role']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
 
-            user = User.objects.create_user(username=username, email=email, password=password)
-            UserProfile.objects.create(user=user, role=role)
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return redirect('signup')
 
-            login(request, user)
-            return redirect('discussion_list')
-    else:
-        form = SignupForm()
-    
-    return render(request, 'forum/signup.html', {'form': form})
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists.")
+            return redirect('signup')
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already registered.")
+            return redirect('signup')
+
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.save()
+
+        messages.success(request, "Your Account has been created, Welcome!")
+        return redirect('login')  # make sure this URL name exists
+    return render(request, 'forum/signup.html')
 
 
 def login_view(request):
@@ -91,8 +99,22 @@ def new_post(request, thread_id):
 
 
 def discussion_list(request):
-     discussions = Discussion.objects.all().order_by('-created_at')
-     return render(request, 'forum/discussion_list.html', {'discussions': discussions})
+    sort_option = request.GET.get('sort', 'latest')
+    filter_date = request.GET.get('date')
+
+    discussions = Discussion.objects.all()
+
+    if filter_date:
+        discussions = discussions.filter(created_at=filter_date)
+
+    if sort_option == 'oldest':
+        discussions = discussions.order_by('created_at')
+    else:  # default is 'latest'
+        discussions = discussions.order_by('-created_at')
+
+    return render(request, 'forum/discussion_list.html', {
+        'discussions': discussions
+    })
 
 
 @login_required
@@ -107,7 +129,8 @@ def discussion_create(request):
     else:
         form = DiscussionForm()
     
-    return render(request, 'discussion_form.html', {'form': form})
+    return render(request, 'forum/discussion_form.html', {'form': form})
+
      
 
 def discussion_detail(request, pk):
@@ -140,10 +163,15 @@ def discussions(request):
     discussions = Discussion.objects.all().order_by('-created_at')
     return render(request, 'forum/discussion_list.html', {'discussions': discussions})
 
-def user_review(request):
-    images = Discussion.objects.filter(image__isnull=False)
-    images = ImagePost.objects.all().order_by('-uploaded_at')
-    return render(request, 'forum/user_review.html', {'images': images})
+
+def user_reviews(request):
+    image_files = [
+        'images/review1.jpg',
+        'images/review2.png',
+        'images/review3.jpeg',
+    ]
+    return render(request, 'forum/user_reviews.html', {'images': image_files})
+
 
 def about_us(request):
     return render(request, 'forum/about_us.html')

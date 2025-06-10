@@ -4,6 +4,7 @@ from .models import UserProfile
 from .models import Discussion, Reply
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
+from .models import UserReview
 
 import re
 
@@ -75,3 +76,10 @@ class ReplyForm(forms.ModelForm):
     class Meta:
         model = Reply
         fields = ['content']
+
+
+
+class UserReviewForm(forms.ModelForm):
+    class Meta:
+        model = UserReview
+        fields = ['name', 'review_text', 'image']
