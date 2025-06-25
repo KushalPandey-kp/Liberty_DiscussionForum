@@ -1,26 +1,94 @@
 {% load static %}
-{% block extra_head %}{% endblock %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html-root" class="">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Liberty Discussion Forum{% endblock %}</title>
-    <link rel="icon" href="{% static 'images/Liberty_favicon.png' %}" type="image/png">
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=1">
+  <meta charset="UTF-8">
+  <title>{% block title %}Liberty Discussion Forum{% endblock %}</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="{% static 'images/Liberty_favicon.png' %}" type="image/png">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="{% static 'js/tailwind.config.js' %}"></script>
+
+  <!-- Custom CSS & Dark Mode Script -->
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=1">
+  <script src="{% static 'js/darkmode.js' %}"></script>
+
+  {% block extra_head %}{% endblock %}
 </head>
-<body>
 
+<body class="flex flex-col min-h-screen bg-gray text-gray-800 dark:bg-gray-900 dark:text-white transition duration-300">
 
-    <!-- Page content -->
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
+ <!-- Navbar -->
+<nav id="navbar" class="bg-white text-gray-800 dark:bg-gray-800 dark:text-white shadow-md">
+  <div class="flex items-center justify-between w-full px-6 py-3">
+    <!-- Left: Logo -->
+    <div class="flex-shrink-0">
+      <a href="{% url 'home' %}" class="flex items-center">
+        <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="h-10 w-auto object-contain">
+      </a>
+    </div>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; {{ now|default:"2025" }} Liberty Discussion Forum | All Rights Reserved</p>
-    </footer>
+    <!-- Center Nav -->
+    <div class="hidden md:flex space-x-10 font-semibold tracking-wide">
+      <a href="{% url 'about_us' %}" class="relative group text-gray-800 dark:text-white hover:text-red-600 dark:hover:text-red-500 transition duration-300">
+        About Us
+        <span class="absolute left-0 -bottom-1 w-0 group-hover:w-full h-0.5 bg-red-600 transition-all"></span>
+      </a>
+      <a href="{% url 'discussion_list' %}" class="relative group text-gray-800 dark:text-white hover:text-red-600 dark:hover:text-red-500 transition duration-300">
+        Discussions
+        <span class="absolute left-0 -bottom-1 w-0 group-hover:w-full h-0.5 bg-red-600 transition-all"></span>
+      </a>
+      <a href="{% url 'user_reviews' %}" class="relative group text-gray-800 dark:text-white hover:text-red-600 dark:hover:text-red-500 transition duration-300">
+        User Reviews
+        <span class="absolute left-0 -bottom-1 w-0 group-hover:w-full h-0.5 bg-red-600 transition-all"></span>
+      </a>
+     <a href="{% url 'image_gallery' %}" class="relative group text-gray-800 dark:text-white hover:text-red-600 dark:hover:text-red-500 transition duration-300">Visual Discussions
+        <span class="absolute left-0 -bottom-1 w-0 group-hover:w-full h-0.5 bg-red-600 transition-all"></span>
+      </a>
+
+    </div>
+
+    <!-- Right: Auth + Dark Mode -->
+    <div class="flex items-center space-x-4 font-medium">
+      {% if user.is_authenticated %}
+        <span class="hidden md:inline">Hi, <strong>{{ user.username }}</strong></span>
+        <form method="POST" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+            Logout
+          </button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="relative group text-gray-800 dark:text-white hover:text-red-600 dark:hover:text-red-500 transition duration-300">Login
+           <span class="absolute left-0 -bottom-1 w-0 group-hover:w-full h-0.5 bg-red-600 transition-all"></span>
+        </a>
+        <a href="{% url 'signup' %}" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg shadow-md hover:shadow-lg font-semibold transition duration-300">
+          Signup
+        </a>
+      {% endif %}
+
+      <!-- Dark Mode Toggle -->
+      <button id="theme-toggle" class="ml-4 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" title="Toggle Dark Mode">
+        <!-- Icon injected by JS -->
+      </button>
+    </div>
+  </div>
+</nav>
+
+  <!-- Page Content -->
+  <main class="flex-grow">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white text-gray-700 dark:bg-gray-900 dark:text-white py-4 text-center shadow-inner">
+    &copy; {{ now|default:"2025" }} <strong>Liberty Discussion Forum</strong> — All Rights Reserved
+  </footer>
 
 </body>
 </html>
+{% block messages %}{% endblock %}
+

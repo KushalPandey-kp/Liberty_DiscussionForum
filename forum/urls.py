@@ -25,4 +25,6 @@ urlpatterns = [
     path('review/', views.user_reviews, name='user_reviews'),
    
     path('about/', views.about_us, name='about_us'),
+
+    path('gallery/', views.image_gallery, name='image_gallery'),
 ]

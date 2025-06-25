@@ -1,125 +1,89 @@
+{% extends 'forum/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Discussions | Liberty Forum</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" href="{% static 'images/Liberty_favicon.png' %}" type="image/png">
-</head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
 
-    <nav class="relative flex items-center justify-between bg-white px-6 py-4 shadow">
-    <!-- Left: Logo -->
-    <a href="{% url 'home' %}" class="flex items-center space-x-2">
-        <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="h-10 w-auto object-contain">
+{% block title %}Discussions | Liberty Forum{% endblock %}
+
+{% block content %}
+<main class="px-6 py-10 max-w-7xl mx-auto">
+
+  <!-- Header Section -->
+  <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+    <h2 class="text-3xl font-extrabold text-red-600 dark:text-red-400 text-center md:text-left">All Discussions</h2>
+    
+    {% if user.is_authenticated %}
+    <a href="{% url 'discussion_create' %}"
+       class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg shadow font-medium transition duration-300">
+      + Start New Discussion
     </a>
+    {% endif %}
+  </div>
 
-    <!-- Center: Navigation Links -->
-    <div class="absolute left-1/2 transform -translate-x-1/2">
-        <div class="flex items-center space-x-6">
-            <a href="{% url 'about_us' %}" class="text-gray-700 hover:text-red-600 font-medium">About Us</a>
-            <a href="{% url 'discussion_list' %}" class="text-gray-700 hover:text-red-600 font-medium">Discussions</a>
-            <a href="{% url 'user_reviews' %}" class="text-gray-700 hover:text-red-600 font-medium">User Reviews</a>
-        </div>
+  <!-- Filters -->
+  <form method="get" class="flex flex-wrap gap-6 items-end mb-10">
+    
+    <!-- Sort -->
+    <div>
+      <label for="sort" class="block text-sm font-semibold mb-1 text-gray-800 dark:text-gray-200">Sort by</label>
+      <select name="sort" id="sort" onchange="this.form.submit()"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+        <option value="latest" {% if request.GET.sort == "latest" %}selected{% endif %}>Latest</option>
+        <option value="oldest" {% if request.GET.sort == "oldest" %}selected{% endif %}>Oldest</option>
+      </select>
     </div>
 
-    <!-- Right: Auth Controls -->
-    <div class="space-x-4">
-        {% if user.is_authenticated %}
-            <span class="text-gray-700">Hello, <strong>{{ user.username }}</strong></span>
-            <form method="POST" action="{% url 'logout' %}" class="inline">
-                {% csrf_token %}
-                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-                    Logout
-                </button>
-            </form>
-        {% else %}
-            <a href="{% url 'login' %}" class="text-black-600 hover:underline">Login</a>
-            <a href="{% url 'signup' %}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Signup</a>
-        {% endif %}
+    <!-- Date Filter -->
+    <div>
+      <label for="date" class="block text-sm font-semibold mb-1 text-gray-800 dark:text-gray-200">Filter by Date</label>
+      <input type="date" name="date" id="date" value="{{ request.GET.date }}" onchange="this.form.submit()"
+             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
     </div>
-</nav>
 
-
-    <!-- Main content -->
-    <main class="flex-grow p-6 max-w-7xl mx-auto">
-        <div class="flex items-center justify-between mb-6">
-           <h2 class="text-3xl font-bold text-red-600 mx-auto w-fit">All Discussions</h2>
-
-            {% if user.is_authenticated %}
-                <a href="{% url 'discussion_create' %}" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 shadow">
-                    + Start New Discussion
-                </a>
-            {% endif %}
-        </div>
-<form method="get" class="flex flex-wrap gap-4 mb-6 items-end">
-  <!-- Sort Dropdown -->
-  <div>
-    <label for="sort" class="block text-sm font-medium text-gray-700 mb-1">Sort by</label>
-    <select name="sort" id="sort" onchange="this.form.submit()"
-      class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200">
-      <option value="latest" {% if request.GET.sort == "latest" %}selected{% endif %}>Latest</option>
-      <option value="oldest" {% if request.GET.sort == "oldest" %}selected{% endif %}>Oldest</option>
-    </select>
-  </div>
-
-  <!-- Date Filter -->
-  <div>
-    <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Filter by Date</label>
-    <input type="date" name="date" id="date" value="{{ request.GET.date }}"
-      onchange="this.form.submit()"
-      class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200">
-  </div>
-
-  <!-- Clear Filters Button -->
-  <div class="mt-6">
-    <a href="{% url 'discussion_list' %}"
-      class="inline-block px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
-      Clear Filters
-    </a>
-  </div>
-</form>
-
-
+    <!-- Clear Filters -->
+    <div class="mt-6">
+      <a href="{% url 'discussion_list' %}"
+         class="inline-block px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition font-medium">
+        Clear Filters
+      </a>
+    </div>
+  </form>
 
   {% if discussions %}
-    <!-- Responsive Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% for discussion in discussions %}
-            <div class="bg-white rounded-xl border border-gray-200 shadow hover:shadow-md transition duration-200 p-5 flex flex-col justify-between">
-                <div>
-                    <a href="{% url 'discussion_detail' discussion.pk %}" class="text-xl font-semibold text-red-700 hover:underline block">
-                        {{ discussion.title }}
-                    </a>
-                    <p class="text-sm text-gray-500 mt-2">
-                        Posted by 
-                        <strong class="text-gray-800">{{ discussion.author.username }}</strong>
-                        {% if discussion.author.userprofile %}
-                            ({{ discussion.author.userprofile.role|title }})
-                        {% endif %}
-                        <br>
-                        <span class="text-xs">on {{ discussion.created_at|date:"M d, Y H:i" }}</span>
-                    </p>
-                    
-                    {% if discussion.image %}
-                    <div class="mt-4">
-                        <img src="{{ discussion.image.url }}" alt="Discussion Image" class="max-w-full h-auto rounded shadow border">
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-{% else %}    
-      <p class="text-gray-600">No discussions yet. Be the first to <a href="{% url 'discussion_create' %}" class="text-red-600 hover:underline">start one</a>!</p>
+  <!-- Discussion Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for discussion in discussions %}
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow hover:shadow-lg transition duration-300 p-5 flex flex-col justify-between h-full">
+      
+      <div>
+        <a href="{% url 'discussion_detail' discussion.pk %}" class="text-xl font-bold text-red-700 dark:text-red-400 hover:underline">
+          {{ discussion.title }}
+        </a>
+
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+          Posted by 
+          <strong class="text-gray-800 dark:text-white">{{ discussion.author.username }}</strong>
+          {% if discussion.author.userprofile %}
+          ({{ discussion.author.userprofile.role|title }})
+          {% endif %}
+          <br>
+          <span class="text-xs text-gray-500 dark:text-gray-400">on {{ discussion.created_at|date:"M d, Y H:i" }}</span>
+        </p>
+
+        {% if discussion.image %}
+        <div class="mt-4">
+          <img src="{{ discussion.image.url }}" alt="Discussion Image"
+               class="w-full max-h-52 object-cover rounded-md border dark:border-gray-600 shadow-sm transition hover:scale-105 duration-300">
+        </div>
         {% endif %}
-    </main>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 
-    <!-- Footer -->
-    <footer class="bg-white text-center py-4 shadow-inner text-sm text-gray-600">
-        &copy; {{ now|default:"2025" }} Liberty Discussion Forum | All Rights Reserved
-    </footer>
-
-</body>
-</html>
+  {% else %}
+  <!-- No Discussion Fallback -->
+  <p class="mt-6 text-gray-600 dark:text-gray-300 text-center italic">
+    No discussions yet. Be the first to <a href="{% url 'discussion_create' %}" class="text-red-600 hover:underline">start one</a>!
+  </p>
+  {% endif %}
+</main>
+{% endblock %}

@@ -1,10 +1,11 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import UserProfile
-from .models import Discussion, Reply
+from .models import Discussion, Reply, DiscussionImage
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from .models import UserReview
+from django.forms import modelformset_factory
 
 import re
 
@@ -61,7 +62,7 @@ class SignupForm(forms.Form):
 class DiscussionForm(forms.ModelForm):
     class Meta:
         model = Discussion
-        fields = ['title','content','image']
+        fields = ['title','content']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500'
@@ -76,10 +77,24 @@ class ReplyForm(forms.ModelForm):
     class Meta:
         model = Reply
         fields = ['content']
-
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'class': 'w-full p-2 border rounded dark:bg-gray-900 dark:text-gray-200 dark:border-gray-600',
+                'rows': 4,
+                'placeholder': 'Write your reply here...'
+            }),
+        }
 
 
 class UserReviewForm(forms.ModelForm):
     class Meta:
         model = UserReview
         fields = ['name', 'review_text', 'image']
+
+class DiscussionImageForm(forms.ModelForm):
+    class Meta:
+        model = DiscussionImage
+        fields = ['image']  # Only single image per formset form
+        widgets = {
+            'image': forms.ClearableFileInput(),  # Removed 'multiple': True
+        }

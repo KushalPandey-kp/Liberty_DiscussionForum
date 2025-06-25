@@ -1,4 +1,4 @@
-/* General body styling */
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f9fafb;
@@ -6,7 +6,7 @@ body {
     padding: 0;
 }
 
-/* Navbar styling */
+
 nav {
     background-color: #ffffff;
     padding: 1rem 2rem;
@@ -27,7 +27,6 @@ nav a:hover {
     color: #dc2626; /* red-600 */
 }
 
-/* About container with logo and text side-by-side */
 .about-wrapper {
     display: flex;
     align-items: center;
@@ -42,7 +41,7 @@ nav a:hover {
     flex-wrap: wrap;
 }
 
-/* Logo beside the about content */
+
 .about-logo {
     flex: 0 0 180px;
 }
@@ -53,7 +52,7 @@ nav a:hover {
     border-radius: 0.5rem;
 }
 
-/* About text section */
+
 .about-content {
     flex: 1;
 }
@@ -82,7 +81,7 @@ footer {
     box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.04);
 }
 
-/* Fix logo size */
+
 .nav-logo-img {
     height: 40px;
     width: auto;
@@ -90,8 +89,9 @@ footer {
     display: block;
 }
 
-/* Optional: restrict anchor area */
+
 a.flex.items-center.space-x-2 {
     display: inline-flex;
     align-items: center;
 }
+

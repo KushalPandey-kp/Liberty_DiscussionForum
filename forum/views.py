@@ -1,18 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.shortcuts import get_object_or_404
-from .models import Thread, Post
-from .forms import SignupForm
-from .models import Category
-from .models import UserProfile
-from .models import Discussion
-from .forms import DiscussionForm, ReplyForm
-from django.contrib.auth.forms import UserCreationForm
-from .models import ImagePost
-from .models import UserReview
+from django.forms import modelformset_factory
+from .models import Thread, Post, Category, UserProfile, Discussion, DiscussionImage, ImagePost, UserReview
+from .forms import SignupForm, DiscussionForm, DiscussionImageForm, ReplyForm
+
 
 def signup_view(request):
     if request.method == 'POST':
@@ -58,23 +52,27 @@ def login_view(request):
 
     return render(request, 'forum/login.html')
 
+
 def logout_view(request):
     logout(request)
     return redirect('home')
 
+
 def forum_home(request):
-     categories = Category.objects.all()
-     return render(request, 'forum/home.html',{'categories': categories})
+    categories = Category.objects.all()
+    return render(request, 'forum/home.html', {'categories': categories})
+
 
 def category_detail(request, category_id):
-     category = get_object_or_404(Category, id=category_id)
-     threads = Thread.objects.filter(category=category).order_by('-created_at')
-     return render(request,'forum/category_detail.html',{'category': category, 'threads': threads})
+    category = get_object_or_404(Category, id=category_id)
+    threads = Thread.objects.filter(category=category).order_by('-created_at')
+    return render(request, 'forum/category_detail.html', {'category': category, 'threads': threads})
+
 
 def thread_detail(request, thread_id):
-     thread = get_object_or_404(Thread, id = thread_id)
-     posts =  Post.objects.filter(thread=thread).order_by('created_at')
-     return render(request, 'forum/thread_detail.html',{'thread': thread, 'posts': posts})
+    thread = get_object_or_404(Thread, id=thread_id)
+    posts = Post.objects.filter(thread=thread).order_by('created_at')
+    return render(request, 'forum/thread_detail.html', {'thread': thread, 'posts': posts})
 
 
 @login_required
@@ -88,14 +86,15 @@ def new_thread(request, category_id):
         return redirect('thread_detail', thread_id=thread.id)
     return render(request, 'forum/new_thread.html', {'category': category})
 
+
 @login_required
 def new_post(request, thread_id):
-     thread = get_object_or_404(Thread, id = thread_id)
-     if request.method == 'POST':
-          content = request.POST['content']
-          Post.objects.create(thread = thread, author = request.user, content = content)
-          return redirect('thread_detail', thread_id=thread.id)
-     return render(request, 'forum/new_post.html',{'thread': thread})
+    thread = get_object_or_404(Thread, id=thread_id)
+    if request.method == 'POST':
+        content = request.POST['content']
+        Post.objects.create(thread=thread, author=request.user, content=content)
+        return redirect('thread_detail', thread_id=thread.id)
+    return render(request, 'forum/new_post.html', {'thread': thread})
 
 
 def discussion_list(request):
@@ -119,45 +118,59 @@ def discussion_list(request):
 
 @login_required
 def discussion_create(request):
+    ImageFormSet = modelformset_factory(DiscussionImage, form=DiscussionImageForm, extra=3, max_num=3, validate_max=True)
+
     if request.method == 'POST':
-        form = DiscussionForm(request.POST, request.FILES)  # Must include request.FILES
-        if form.is_valid():
+        form = DiscussionForm(request.POST)
+        formset = ImageFormSet(request.POST, request.FILES, queryset=DiscussionImage.objects.none())
+
+        if form.is_valid() and formset.is_valid():
             discussion = form.save(commit=False)
             discussion.author = request.user
             discussion.save()
+
+            for image_form in formset:
+                if image_form.cleaned_data.get('image'):
+                    image_instance = image_form.save(commit=False)
+                    image_instance.discussion = discussion
+                    image_instance.save()
+
             return redirect('discussion_detail', pk=discussion.pk)
     else:
         form = DiscussionForm()
-    
-    return render(request, 'forum/discussion_form.html', {'form': form})
+        formset = ImageFormSet(queryset=DiscussionImage.objects.none())
 
-     
+    return render(request, 'forum/discussion_form.html', {
+        'form': form,
+        'formset': formset
+    })
+
 
 def discussion_detail(request, pk):
-     discussion = get_object_or_404(Discussion, pk=pk)
-     replies = discussion.replies.all()
+    discussion = get_object_or_404(Discussion, pk=pk)
+    replies = discussion.replies.all()
 
-     if request.method == 'POST':
-          form = ReplyForm(request.POST)
-          if form.is_valid():
-               reply = form.save(commit=False)
-               reply.discussion = discussion
-               reply.author = request.user
-               reply.save()
-               return redirect('discussion_detail', pk=discussion.pk)
-     else:
+    if request.method == 'POST':
+        form = ReplyForm(request.POST)
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.discussion = discussion
+            reply.author = request.user
+            reply.save()
+            return redirect('discussion_detail', pk=discussion.pk)
+    else:
         form = ReplyForm()
 
-     return render(request, 'forum/discussion_detail.html',{
-                 'discussion': discussion,
-                 'replies' : replies,
-                 'form' : form
-            })
+    return render(request, 'forum/discussion_detail.html', {
+        'discussion': discussion,
+        'replies': replies,
+        'form': form
+    })
+
 
 def home(request):
-    if request.user.is_authenticated:
-        return render(request, 'forum/home.html')
     return render(request, 'forum/home.html')
+
 
 def discussions(request):
     discussions = Discussion.objects.all().order_by('-created_at')
@@ -175,3 +188,8 @@ def user_reviews(request):
 
 def about_us(request):
     return render(request, 'forum/about_us.html')
+
+
+def image_gallery(request):
+    images = DiscussionImage.objects.select_related('discussion').all().order_by('-id')  # newest first
+    return render(request, 'forum/image_gallery.html', {'images': images})

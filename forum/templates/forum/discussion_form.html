@@ -1,3 +1,4 @@
+{% load widget_tweaks %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -11,10 +12,9 @@
 
 <!-- Header -->
 <header class="bg-white shadow p-4 flex justify-between items-center">
-    <div class="flex items-center space-x-3">
-        <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="h-12 w-auto">
-        
-    </div>
+    <a href="{% url 'home' %}" class="flex items-center space-x-2">
+        <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="h-10 w-auto object-contain">
+    </a>
     <div>
         {% if user.is_authenticated %}
             <span class="text-gray-700 mr-4">Hello, <strong>{{ user.username }}</strong>!</span>
@@ -34,38 +34,50 @@
     <div class="bg-white p-8 shadow-md rounded-lg border border-gray-200">
         <h2 class="text-2xl font-bold text-red-600 mb-6">Start a New Discussion</h2>
 
-        <form method="post" class="space-y-6" enctype="multipart/form-data">
-            {% csrf_token %}
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+    {% csrf_token %}
 
-            <div>
-                <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                {{ form.title }}
-                {% if form.title.errors %}
-                    <p class="text-red-500 text-sm mt-1">{{ form.title.errors.0 }}</p>
-                {% endif %}
-            </div>
-            <div>
-                <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
-                 {{ form.image }}
-            </div>
-            <div>
-                <label for="{{ form.content.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Content</label>
-                {{ form.content }}
-                {% if form.content.errors %}
-                    <p class="text-red-500 text-sm mt-1">{{ form.content.errors.0 }}</p>
-                {% endif %}
-            </div>
+    <!-- Title Field -->
+    <div>
+        <label class="block text-gray-700 font-semibold mb-1" for="{{ form.title.id_for_label }}">Title</label>
+        {{ form.title|add_class:"w-full p-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:border-blue-400" }}
+        {% for error in form.title.errors %}
+            <p class="text-sm text-red-500 mt-1">{{ error }}</p>
+        {% endfor %}
+    </div>
 
-            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded shadow">
-                Post Discussion
-            </button>
-        </form>
+    <!-- Content Field -->
+    <div>
+        <label class="block text-gray-700 font-semibold mb-1" for="{{ form.content.id_for_label }}">Content</label>
+        {{ form.content|add_class:"w-full p-3 border border-gray-300 rounded shadow-sm h-32 resize-y focus:outline-none focus:ring focus:border-blue-400" }}
+        {% for error in form.content.errors %}
+            <p class="text-sm text-red-500 mt-1">{{ error }}</p>
+        {% endfor %}
+    </div>
+
+    <!-- Image Uploads -->
+    <div>
+        <p class="text-sm font-medium text-gray-700 mb-2">Upload up to 3 images:</p>
+        {{ formset.management_form }}
+        <div class="space-y-2">
+            {% for image_form in formset %}
+                {{ image_form.image|add_class:"w-full p-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:border-blue-400" }}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded shadow font-semibold">
+        Post Discussion
+    </button>
+</form>
+
     </div>
 </main>
 
 <!-- Footer -->
-<footer class="bg-white text-center py-4 shadow-inner text-sm text-gray-600 mt-10">
-    &copy; {{ now|default:"2025" }} Liberty Discussion Forum | All Rights Reserved
+<footer class="bg-white text-gray-700 py-4 text-center shadow-inner">
+    &copy; {{ now|default:"2025" }} <strong>Liberty Discussion Forum</strong> — All Rights Reserved
 </footer>
 
 </body>

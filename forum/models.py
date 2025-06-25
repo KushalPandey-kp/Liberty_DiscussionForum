@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import now
+from django.utils import timezone
 
 class UserProfile(models.Model):
     ROLE_CHOICES = [
@@ -68,14 +70,29 @@ class ImagePost(models.Model):
 
 class UserReview(models.Model):
     name = models.CharField(max_length=100)
-    review_text = models.TextField(blank=True, null=True)  # Make sure this is present
-    image = models.ImageField(upload_to='user_reviews/')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    review_text = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='user_reviews/', null=True, blank=True, default='images/default_review.jpg')
+    uploaded_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
-
     
+class DiscussionImage(models.Model):
+    discussion = models.ForeignKey(Discussion, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='discussion_images/')
+
+    def __str__(self):
+        return f"Image for {self.discussion.title}"
+    
+
+class GalleryImage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='gallery_images/')
+    caption = models.CharField(max_length=255, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Image"
     
     
     

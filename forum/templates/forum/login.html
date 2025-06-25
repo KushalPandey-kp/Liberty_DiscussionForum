@@ -1,91 +1,81 @@
+{% extends 'forum/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Liberty Discussion Forum</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" href="{% static 'images/Liberty_favicon.png' %}" type="image/png">
-</head>
-<body class="bg-white min-h-screen flex flex-col">
 
-    <!-- Main Content -->
-    <main class="flex-grow flex items-center justify-center">
-        <div class="w-full max-w-md p-8 bg-white shadow-lg rounded-lg border border-gray-200 my-8">
-            <!-- Logo -->
-            <div class="flex justify-center mb-6">
-                <a href="{% url 'home' %}" class="flex items-center space-x-3">
-                    <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="h-16 w-auto object-contain">
-                </a>
-            </div>
+{% block title %}Login | Liberty Discussion Forum{% endblock %}
 
-            <!-- Error Messages -->
-            {% if form.errors %}
-                <div class="mb-4 text-sm text-red-600 bg-red-100 border border-red-400 p-2 rounded">
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    {% endfor %}
-                    {% for error in form.non_field_errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
+{% block content %}
+<main class="flex-grow flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+  <div class="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl rounded-lg p-8 my-10 transition duration-300">
 
-            <!-- Success Messages -->
-                    {% if messages %}
-            <div class="mb-4">
-                {% for message in messages %}
-                <div class="p-3 rounded bg-green-100 text-green-800 text-center">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
+    <!-- Logo -->
+    <div class="flex justify-center mb-6">
+      <a href="{% url 'home' %}">
+        <img src="{% static 'images/Liberty_logo.png' %}" alt="Liberty Logo" class="h-16 w-auto object-contain">
+      </a>
+    </div>
 
-            <!-- Login Form -->
-            <form method="post" class="space-y-5">
-                {% csrf_token %}
+    <!-- Error Messages -->
+    {% if form.errors %}
+    <div class="mb-4 text-sm text-red-600 bg-red-100 dark:bg-red-900 border border-red-400 p-3 rounded">
+      {% for field in form %}
+        {% for error in field.errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      {% endfor %}
+      {% for error in form.non_field_errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
 
-                <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-                    <input type="text" name="username" id="username" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                           value="{{ form.username.value|default_if_none:'' }}">
-                    {% if form.username.errors %}
-                        <p class="text-red-500 text-sm mt-1">{{ form.username.errors.0 }}</p>
-                    {% endif %}
-                </div>
+    <!-- Success Messages -->
+    {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+      <div class="p-3 rounded bg-green-100 text-green-800 text-center dark:bg-green-900 dark:text-green-200">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
 
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" name="password" id="password" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                    {% if form.password.errors %}
-                        <p class="text-red-500 text-sm mt-1">{{ form.password.errors.0 }}</p>
-                    {% endif %}
-                </div>
+    <!-- Login Form -->
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
 
-                <button type="submit"
-                        class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition duration-200">
-                    Log In
-                </button>
-            </form>
+      <!-- Username -->
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
+        <input type="text" name="username" id="username" required
+               value="{{ form.username.value|default_if_none:'' }}"
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded shadow-sm dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500">
+        {% if form.username.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.username.errors.0 }}</p>
+        {% endif %}
+      </div>
 
-            <!-- Signup Link -->
-            <div class="mt-4 text-center text-sm text-gray-700">
-                Don’t have an account? 
-                <a href="{% url 'signup' %}" class="text-red-600 hover:underline font-medium">Sign Up</a>
-            </div>
-        </div>
-    </main>
+      <!-- Password -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+        <input type="password" name="password" id="password" required
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded shadow-sm dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500">
+        {% if form.password.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.password.errors.0 }}</p>
+        {% endif %}
+      </div>
 
-    <!-- Footer -->
-    <footer class="bg-white text-center py-4 shadow-inner text-sm text-gray-600">
-        &copy; {{ now|default:"2025" }} Liberty Discussion Forum | All Rights Reserved
-    </footer>
+      <!-- Submit Button -->
+      <button type="submit"
+              class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded shadow transition duration-200">
+        Log In
+      </button>
+    </form>
 
-</body>
-</html>
+    <!-- Signup Link -->
+    <div class="mt-4 text-center text-sm text-gray-700 dark:text-gray-300">
+      Don’t have an account?
+      <a href="{% url 'signup' %}" class="text-red-600 hover:underline font-semibold">Sign Up</a>
+    </div>
+  </div>
+</main>
+{% endblock %}
